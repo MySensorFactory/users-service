@@ -4,26 +4,37 @@ import com.factory.exception.ClientErrorException;
 import com.factory.openapi.model.CreateUserRequest;
 import com.factory.openapi.model.PatchUserRequest;
 import com.factory.openapi.model.UserResponse;
-import com.factory.persistence.entity.User;
+import com.factory.persistence.users.entity.User;
+import com.factory.persistence.users.repository.RoleRepository;
+import com.factory.persistence.users.repository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.factory.persistence.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @Mock
     private ModelMapper modelMapper;
@@ -35,10 +46,13 @@ public class UserServiceTest {
     public void shouldCreateUser() {
         // Given
         final var request = new CreateUserRequest();
+        request.setRoles(List.of());
         final var entity = new User();
-        when(modelMapper.map(any(), eq(com.factory.persistence.entity.User.class))).thenReturn(entity);
+        when(modelMapper.map(any(), eq(com.factory.persistence.users.entity.User.class))).thenReturn(entity);
         when(userRepository.save(any())).thenReturn(entity);
         when(modelMapper.map(any(), eq(UserResponse.class))).thenReturn(UserResponse.builder().build());
+        when(roleRepository.findAllRolesByName(any())).thenReturn(Set.of());
+        when(roleRepository.existsByRoleNames(any(), anyLong())).thenReturn(true);
 
         // When
         final var result = userService.createUser(request);
@@ -62,15 +76,15 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserById() {
+    public void testGetUserByName() {
         // Given
-        final var userId = UUID.randomUUID();
-        final var entity = new com.factory.persistence.entity.User();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(entity));
+        final var userName = UUID.randomUUID().toString();
+        final var entity = new com.factory.persistence.users.entity.User();
+        when(userRepository.findByUsername(userName)).thenReturn(Optional.of(entity));
         when(modelMapper.map(any(), eq(UserResponse.class))).thenReturn(UserResponse.builder().build());
 
         // When
-        final var result = userService.getUserById(userId);
+        final var result = userService.getUserByName(userName);
 
         // Then
         assertNotNull(result);
@@ -79,11 +93,11 @@ public class UserServiceTest {
     @Test(expected = ClientErrorException.class)
     public void shouldThrowUserNotFound() {
         // Given
-        final var userId = UUID.randomUUID();
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        final var name = UUID.randomUUID().toString();
+        when(userRepository.findByUsername(name)).thenReturn(Optional.empty());
 
         // When
-        userService.getUserById(userId);
+        userService.getUserByName(name);
 
         // Then - Expects an exception
     }
@@ -91,24 +105,27 @@ public class UserServiceTest {
     @Test
     public void shouldUpdateUser() {
         // Given
-        final var userId = UUID.randomUUID();
+        final var userName = UUID.randomUUID().toString();
         final var request = new PatchUserRequest();
+        request.setRoles(List.of());
         final var existingEntity = new User();
         final var updatedEntity = new User();
+        updatedEntity.setRoles(new HashSet<>());
         final String mail = "abc@gmail.com";
         final boolean isEnabled = true;
         final String password = "pass";
-        final String userName = "usr";
         existingEntity.setEmail(mail);
         existingEntity.setPassword(password);
         existingEntity.setUsername(userName);
         existingEntity.setEnabled(isEnabled);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingEntity));
+        existingEntity.setRoles(new HashSet<>());
+        when(userRepository.findByUsername(userName)).thenReturn(Optional.of(existingEntity));
         when(userRepository.save(any())).thenReturn(updatedEntity);
         when(modelMapper.map(any(), eq(UserResponse.class))).thenReturn(UserResponse.builder().build());
+        when(roleRepository.existsByRoleNames(any(), anyLong())).thenReturn(true);
 
         // When
-        final var result = userService.updateUser(userId, request);
+        final var result = userService.updateUser(userName, request);
 
         // Then
         assertNotNull(result);
