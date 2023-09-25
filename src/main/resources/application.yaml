@@ -2,7 +2,7 @@ server:
   port: 9299
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/factory_users
+    url: jdbc:postgresql://localhost:5432/compose-postgres
     username: compose-postgres
     password: compose-postgres
   jpa:

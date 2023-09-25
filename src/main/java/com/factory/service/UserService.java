@@ -28,6 +28,12 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
 
+    public void activateUser(final String userName) {
+        var user = getUser(userName);
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
     public UserResponse createUser(final CreateUserRequest request) {
         checkIfUserExists(request);
         checkIfAllRolesExist(request.getRoles());

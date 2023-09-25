@@ -19,6 +19,12 @@ public class UsersController implements UsersApi {
     private final UserService userService;
 
     @Override
+    public ResponseEntity<Void> activateUser(final String userName) {
+        userService.activateUser(userName);
+        return null;
+    }
+
+    @Override
     public ResponseEntity<UserResponse> createUser(@Valid final CreateUserRequest createUserRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(createUserRequest));
     }

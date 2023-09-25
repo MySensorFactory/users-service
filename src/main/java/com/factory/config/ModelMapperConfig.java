@@ -27,7 +27,7 @@ public class ModelMapperConfig {
                     return null;
                 }
                 var result = new User();
-                result.setEnabled(source.getEnabled());
+                result.setEnabled(false);
                 result.setPassword(source.getPassword());
                 result.setEmail(source.getEmail());
                 result.setUsername(source.getUsername());
