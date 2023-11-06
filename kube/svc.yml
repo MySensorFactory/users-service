@@ -5,7 +5,7 @@ metadata:
   namespace: factory
 spec:
   selector:
-    app: users-service-deployment
+    app: users-service
   ports:
     - name: http
       protocol: TCP
