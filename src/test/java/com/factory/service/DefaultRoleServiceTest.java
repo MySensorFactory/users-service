@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RoleServiceTest {
+public class DefaultRoleServiceTest {
 
     @Mock
     private RoleRepository roleRepository;
@@ -30,7 +30,7 @@ public class RoleServiceTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private RoleService roleService;
+    private DefaultRoleService defaultRoleService;
 
     @Test
     public void shouldCreateRole() {
@@ -44,7 +44,7 @@ public class RoleServiceTest {
         when(modelMapper.map(entity, RoleResponse.class)).thenReturn(response);
 
         // When
-        final var result = roleService.createRole(request);
+        final var result = defaultRoleService.createRole(request);
 
         // Then
         assertEquals(response, result);
@@ -59,7 +59,7 @@ public class RoleServiceTest {
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(new Role()));
 
         // When
-        roleService.createRole(request);
+        defaultRoleService.createRole(request);
 
         // Then - Expects an exception
     }
@@ -78,7 +78,7 @@ public class RoleServiceTest {
         when(modelMapper.map(role2, RoleResponse.class)).thenReturn(roleResponses.get(1));
 
         // When
-        final var result = roleService.getAllRoles();
+        final var result = defaultRoleService.getAllRoles();
 
         // Then
         assertEquals(roleResponses, result);

@@ -4,7 +4,7 @@ import com.factory.openapi.api.UsersApi;
 import com.factory.openapi.model.CreateUserRequest;
 import com.factory.openapi.model.PatchUserRequest;
 import com.factory.openapi.model.UserResponse;
-import com.factory.service.UserService;
+import com.factory.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,26 +16,26 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class UsersController implements UsersApi {
 
-    private final UserService userService;
+    private final UsersService usersService;
 
     @Override
     public ResponseEntity<Void> activateUser(final String userName) {
-        userService.activateUser(userName);
+        usersService.activateUser(userName);
         return null;
     }
 
     @Override
     public ResponseEntity<UserResponse> createUser(@Valid final CreateUserRequest createUserRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(createUserRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usersService.createUser(createUserRequest));
     }
 
     @Override
     public ResponseEntity<UserResponse> getUserDetails(final String userName) {
-        return ResponseEntity.ok(userService.getUserByName(userName));
+        return ResponseEntity.ok(usersService.getUserByName(userName));
     }
 
     @Override
     public ResponseEntity<UserResponse> updateUser(final String userName, @Valid final PatchUserRequest patchUserRequest) {
-        return ResponseEntity.ok(userService.updateUser(userName, patchUserRequest));
+        return ResponseEntity.ok(usersService.updateUser(userName, patchUserRequest));
     }
 }

@@ -10,6 +10,7 @@ import com.factory.persistence.users.repository.RoleRepository;
 import com.factory.persistence.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,19 +22,22 @@ import static com.factory.openapi.model.Error.CodeEnum.INVALID_INPUT;
 import static com.factory.openapi.model.Error.CodeEnum.NOT_FOUND;
 
 @Service
+@ConditionalOnProperty(name = "app.config.auth-source", havingValue = "default", matchIfMissing = true)
 @RequiredArgsConstructor
-public class UserService {
+public class DefaultUserService implements UsersService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
 
+    @Override
     public void activateUser(final String userName) {
         var user = getUser(userName);
         user.setEnabled(true);
         userRepository.save(user);
     }
 
+    @Override
     public UserResponse createUser(final CreateUserRequest request) {
         checkIfUserExists(request);
         checkIfAllRolesExist(request.getRoles());
@@ -66,6 +70,7 @@ public class UserService {
         return modelMapper.map(user, User.class);
     }
 
+    @Override
     public UserResponse getUserByName(final String userName) {
         var result = getUser(userName);
         return toDto(result);
@@ -80,6 +85,7 @@ public class UserService {
         return modelMapper.map(user, UserResponse.class);
     }
 
+    @Override
     public UserResponse updateUser(final String userName, final PatchUserRequest request) {
         var entity = updateEntity(getUser(userName), request);
         return toDto(userRepository.save(entity));

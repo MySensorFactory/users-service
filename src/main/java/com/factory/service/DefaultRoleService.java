@@ -7,6 +7,7 @@ import com.factory.persistence.users.entity.Role;
 import com.factory.persistence.users.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +15,14 @@ import java.util.List;
 import static com.factory.openapi.model.Error.CodeEnum.ALREADY_EXISTS;
 
 @Service
+@ConditionalOnProperty(name = "app.config.auth-source", havingValue = "default", matchIfMissing = true)
 @RequiredArgsConstructor
-public class RoleService {
+public class DefaultRoleService implements RolesService {
 
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
 
+    @Override
     public RoleResponse createRole(final CreateRoleRequest request) {
         checkIfRoleExists(request);
         final var entity = toEntity(request);
@@ -41,6 +44,7 @@ public class RoleService {
         return modelMapper.map(request, Role.class);
     }
 
+    @Override
     public List<RoleResponse> getAllRoles() {
         final List<Role> roles = (List<Role>) roleRepository.findAll();
         return roles.stream()

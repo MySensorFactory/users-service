@@ -17,3 +17,14 @@ logging:
       springframework:
         boot:
           autoconfigure: error
+app:
+  config:
+    auth-source: keycloak # default, keycloak
+    keycloakUrl: http://localhost:8080/auth
+    adminRealm: master
+    masterClientId: admin-cli
+    adminUserName: admin
+    masterScope: openid
+    masterClientSecret: lA2ObANJfAxX9BopVCGx4qp0S5CplJ6v
+    masterUserPassword: Pa55w0rd
+    usersRealm: SpringBootKeycloak

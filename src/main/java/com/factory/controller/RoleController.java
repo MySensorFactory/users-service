@@ -3,7 +3,7 @@ package com.factory.controller;
 import com.factory.openapi.api.RolesApi;
 import com.factory.openapi.model.CreateRoleRequest;
 import com.factory.openapi.model.RoleResponse;
-import com.factory.service.RoleService;
+import com.factory.service.RolesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,15 +15,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleController implements RolesApi {
 
-    private final RoleService roleService;
+    private final RolesService rolesService;
 
     @Override
     public ResponseEntity<RoleResponse> createRole(@Valid final CreateRoleRequest request) {
-        return ResponseEntity.ok(roleService.createRole(request));
+        return ResponseEntity.ok(rolesService.createRole(request));
     }
 
     @Override
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
-        return ResponseEntity.ok(roleService.getAllRoles());
+        return ResponseEntity.ok(rolesService.getAllRoles());
     }
 }

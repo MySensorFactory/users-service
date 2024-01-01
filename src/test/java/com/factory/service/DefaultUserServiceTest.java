@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserServiceTest {
+public class DefaultUserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -40,7 +40,7 @@ public class UserServiceTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private UserService userService;
+    private DefaultUserService defaultUserService;
 
     @Test
     public void shouldCreateUser() {
@@ -55,7 +55,7 @@ public class UserServiceTest {
         when(roleRepository.existsByRoleNames(any(), anyLong())).thenReturn(true);
 
         // When
-        final var result = userService.createUser(request);
+        final var result = defaultUserService.createUser(request);
 
         // Then
         assertNotNull(result);
@@ -70,7 +70,7 @@ public class UserServiceTest {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(new User()));
 
         // When
-        userService.createUser(request);
+        defaultUserService.createUser(request);
 
         // Then - Expects an exception
     }
@@ -84,7 +84,7 @@ public class UserServiceTest {
         when(modelMapper.map(any(), eq(UserResponse.class))).thenReturn(UserResponse.builder().build());
 
         // When
-        final var result = userService.getUserByName(userName);
+        final var result = defaultUserService.getUserByName(userName);
 
         // Then
         assertNotNull(result);
@@ -97,7 +97,7 @@ public class UserServiceTest {
         when(userRepository.findByUsername(name)).thenReturn(Optional.empty());
 
         // When
-        userService.getUserByName(name);
+        defaultUserService.getUserByName(name);
 
         // Then - Expects an exception
     }
@@ -125,7 +125,7 @@ public class UserServiceTest {
         when(roleRepository.existsByRoleNames(any(), anyLong())).thenReturn(true);
 
         // When
-        final var result = userService.updateUser(userName, request);
+        final var result = defaultUserService.updateUser(userName, request);
 
         // Then
         assertNotNull(result);
